@@ -1,0 +1,18 @@
+[submodule "packages/husky_UR_accessories"]
+	path = packages/husky_UR_accessories
+	url = https://github.com/ripl/husky_UR_accessories
+[submodule "packages/robotiq-s-interface"]
+	path = packages/robotiq-s-interface
+	url = https://github.com/ripl/robotiq-s-interface
+[submodule "packages/universal_robot"]
+	path = packages/universal_robot
+	url = https://github.com/ros-industrial/universal_robot.git
+[submodule "packages/ros-utils"]
+	path = packages/ros-utils
+	url = git@github.com:ripl/ros-utils.git
+[submodule "packages/capture-images"]
+	path = packages/capture-images
+	url = git@github.com:ripl/capture-images.git
+[submodule "octo"]
+	path = octo
+	url = git@github.com:ripl/octo.git

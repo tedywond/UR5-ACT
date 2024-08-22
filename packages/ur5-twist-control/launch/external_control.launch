@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="ur5_cartesian_control" name="external_control" type="external_control_srv.py" output="screen">
+  </node>
+</launch>

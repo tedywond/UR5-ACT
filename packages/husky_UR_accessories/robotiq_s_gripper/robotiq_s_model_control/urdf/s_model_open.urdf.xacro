@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="s_model_open">
+
+    <xacro:macro name="s_model_open" params="parent prefix ">
+
+        <!-- mount the Gripper to the robot -->
+
+        <joint name="${prefix}_s_model_adapter" type="fixed" >
+            <!-- <origin xyz="0.0 0.0 0.015" rpy="0.0 0.0 3.14159"/> -->
+            
+            <!-- This new origin corrects ~4.5deg (0.0785rad) error in the gripper pose wrt ft300 -->
+            <origin xyz="0.0 0.0 0.015" rpy="0.0 0.0 3.22013"/>
+
+            <parent link="${parent}" />
+            <child link="${prefix}s_model_adapter_link" />
+        </joint>
+
+        <joint name="${prefix}_s_model_fix" type="fixed" >
+            <origin xyz="0.0 0.0 0.018" rpy="1.5708 0.0 -0.7854"/>
+            <parent link="${prefix}s_model_adapter_link" />
+            <child link="${prefix}s_model_link" />
+        </joint>
+
+        <link name="${prefix}s_model_adapter_link">
+
+        <visual>
+         <origin xyz="0 0 0" rpy="0 0 0" />
+         <geometry>
+          <cylinder radius="0.04" length="0.03"/>
+         </geometry>
+         <material name="black"/>
+        </visual>
+
+         <collision>
+         <origin xyz="0 0 0" rpy="0 0 0"/>
+         <geometry>
+         <cylinder radius="0.04" length="0.03"/>
+         </geometry>
+         <material name="red"/>
+        </collision>
+        </link>
+
+        <link name="${prefix}s_model_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://robotiq_s_model_control/meshes/s_model_open.dae" />
+                </geometry>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://robotiq_s_model_control/meshes/s_model_open_collision.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+    </xacro:macro>
+</robot>

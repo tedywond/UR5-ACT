@@ -1,0 +1,24 @@
+manipulator:
+  kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+  kinematics_solver_search_resolution: 0.05
+  kinematics_solver_timeout: 0.05
+  kinematics_solver_attempts: 3
+  solve_type: Distance
+palm_manipulator:
+  kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+  kinematics_solver_search_resolution: 0.05
+  kinematics_solver_timeout: 0.05
+  kinematics_solver_attempts: 3
+  solve_type: Distance
+hand_center_manipulator:
+  kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+  kinematics_solver_search_resolution: 0.05
+  kinematics_solver_timeout: 0.05
+  kinematics_solver_attempts: 3
+  solve_type: Distance
+finger_tip_manipulator:
+  kinematics_solver: trac_ik_kinematics_plugin/TRAC_IKKinematicsPlugin
+  kinematics_solver_search_resolution: 0.05
+  kinematics_solver_timeout: 0.05
+  kinematics_solver_attempts: 3
+  solve_type: Distance

@@ -1,0 +1,11 @@
+<launch>
+  <arg name="arm_rgb_topic" default="/camera_arm/color/image_raw" doc="Topic for arm camera (rgb)" />
+  <arg name="arm_depth_topic" default="/camera_arm/depth/image_rect_raw" doc="Topic for arm camera (depth" />
+  <arg name="arm_pc_topic" default="/camera_arm/depth_registered/points" doc="Topic for arm camera (pointcloud)" />
+
+  <node pkg="capture_images" name="image_srv" type="image_srv.py" output="screen">
+    <param name="arm_rgb_topic" value="$(arg arm_rgb_topic)" />
+    <param name="arm_depth_topic" value="$(arg arm_depth_topic)" />
+    <param name="arm_pc_topic" value="$(arg arm_pc_topic)" />
+  </node>
+</launch>

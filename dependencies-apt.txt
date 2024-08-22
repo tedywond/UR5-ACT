@@ -1,0 +1,67 @@
+# LIST YOUR APT PACKAGES HERE
+
+# Moveit
+#ros-noetic-ur-modern-driver
+ros-noetic-moveit-planners-*
+ros-noetic-moveit-ros-planning*
+ros-noetic-moveit-ros-move-group
+ros-noetic-moveit-ros-control-interface
+ros-noetic-trac-ik*
+ros-noetic-moveit-visual-tools
+ros-noetic-moveit-ros-visualization
+
+ros-noetic-soem
+
+# Dependencies of ur5-interface
+ros-noetic-cv-bridge
+ros-noetic-rosbridge-suite
+ros-noetic-soem
+ros-noetic-pcl-ros
+# husky/ur packages
+# ros-noetic-husky-msgs
+# ros-noetic-ur-description
+# moveit
+ros-noetic-moveit-commander
+ros-noetic-moveit-core
+ros-noetic-moveit-fake-controller-manager
+ros-noetic-moveit-kinematics
+ros-noetic-moveit-msgs
+ros-noetic-moveit-planners-ompl
+ros-noetic-moveit-python
+ros-noetic-moveit-ros-benchmarks
+ros-noetic-moveit-ros-control-interface
+ros-noetic-moveit-ros-manipulation
+ros-noetic-moveit-ros-move-group
+ros-noetic-moveit-ros-perception
+ros-noetic-moveit-ros-planning
+ros-noetic-moveit-ros-planning-interface
+ros-noetic-moveit-ros-robot-interaction
+ros-noetic-moveit-ros-visualization
+ros-noetic-moveit-ros-warehouse
+ros-noetic-moveit-setup-assistant
+ros-noetic-moveit-simple-controller-manager
+ros-noetic-moveit-visual-tools
+ros-noetic-ros-numpy
+# ros-noetic-ur5-moveit-config
+# ros-noetic-trac-ik
+# ros-noetic-trac-ik-kinematics-plugin
+# ros-noetic-ur-kinematics
+# ros-noetic-lms1xx
+# graphviz
+libgraphviz-dev
+
+# pcl related
+python3-pcl
+pcl-tools
+
+# realsense
+ros-${ROS_DISTRO}-realsense2-camera
+
+# new driver (ur-robot-driver)
+ros-noetic-cartesian-control-msgs
+
+libasound2-dev
+python3-tk
+
+curl
+git

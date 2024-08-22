@@ -1,0 +1,105 @@
+#! /usr/bin/python
+
+import rospy
+import signal
+from ros_utils import *
+from sensor_msgs.msg import Joy
+from robotiq_s_interface import Gripper
+from threading import BoundedSemaphore
+
+# define buttons map
+BUTTON_ID_GRANT_MODE_SWITCH = 3
+AXIS_ID_MODE_SWITCH = [6, 7]
+BASIC_MODE_AXIS_VALUE = (6, 1.0)
+WIDE_MODE_AXIS_VALUE = (6, -1.0)
+PINCH_MODE_AXIS_VALUE = (7, -1.0)
+SCISSOR_MODE_AXIS_VALUE = (7, 1.0)
+
+BUTTON_ID_GRANT_GO_TO = 1
+AXIS_ID_GO_TO = [7]
+OPEN_AXIS_VALUE = (7, -1.0)
+CLOSE_AXIS_VALUE = (7, 1.0)
+
+
+gripper = None
+semaphore = None
+mode_switch_map = {}
+goto_map = {}
+
+def joy_command(msg):
+    global semaphore, mode_switch_map, goto_map
+    # return if another message is using the gripper
+    gripper_is_busy = semaphore.acquire( blocking=False )
+    if gripper_is_busy: return
+    # look for mode switch commands
+    if msg.buttons[BUTTON_ID_GRANT_MODE_SWITCH] > 0:
+        for axis_id in AXIS_ID_MODE_SWITCH:
+            command_key = (axis_id, msg.axes[axis_id])
+            if command_key in mode_switch_map:
+                mode_switch_fcn = mode_switch_map[command_key]
+                mode_switch_fcn()
+    # look for goto commands
+    if msg.buttons[BUTTON_ID_GRANT_GO_TO] > 0:
+        for axis_id in AXIS_ID_GO_TO:
+            command_key = (axis_id, msg.axes[axis_id])
+            if command_key in goto_map:
+                goto_fcn = goto_map[command_key]
+                goto_fcn()
+    # release lock and exit
+    semaphore.release()
+
+def shutdown(*args):
+    global gripper
+    ROS_INFO("Teleop Gripper Controller is not shutting down...")
+    gripper.shutdown()
+
+def main():
+    global gripper, semaphore, mode_switch_map, goto_map
+    # init ROS node
+    rospy.init_node("teleop_gripper_controller")
+
+    # initialize semaphore
+    semaphore = BoundedSemaphore()
+
+    # get parameters
+    joy_input_topic = rospy.get_param("~joy_topic")
+    gripper_open_value = rospy.get_param("~gripper_open_value", 0.0)
+    gripper_close_value = rospy.get_param("~gripper_close_value", 1.0)
+
+    # create Gripper interface and initialize it
+    gripper = Gripper(
+        open_value=gripper_open_value,
+        close_value=gripper_close_value,
+        namespace=rospy.get_namespace()
+    )
+    gripper.activate()
+
+    # initialize mode switch map
+    mode_switch_map = {
+        BASIC_MODE_AXIS_VALUE : gripper.basic_mode,
+        WIDE_MODE_AXIS_VALUE : gripper.wide_mode,
+        PINCH_MODE_AXIS_VALUE : gripper.pinch_mode,
+        SCISSOR_MODE_AXIS_VALUE : gripper.scissor_mode
+    }
+
+    # initialize goto map
+    goto_map = {
+        OPEN_AXIS_VALUE : gripper.open,
+        CLOSE_AXIS_VALUE : gripper.close
+    }
+
+    # listen for SIGINT
+    signal.signal(signal.SIGINT, shutdown)
+
+    # subscribe to joy commands
+    rospy.Subscriber( joy_input_topic, Joy, joy_command )
+
+    # keep spinning
+    rospy.spin()
+
+    # shutdown node
+    shutdown()
+
+
+if __name__ == '__main__':
+    main()

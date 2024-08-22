@@ -1,0 +1,14 @@
+<launch>
+  <arg name="joy" doc="Name of the topic the joystick is publishing on" />
+  <arg name="open_value" default="0.0" doc="Position of the fingers (between [0,1]) to consider as 'open'" />
+  <arg name="close_value" default="1.0" doc="Position of the fingers (between [0,1]) to consider as 'close'" />
+
+  <group ns="joy_teleop">
+    <node pkg="robotiq-s-interface" type="teleop_gripper_controller" name="teleop_gripper_controller">
+      <param name="joy_topic" value="$(arg joy)" />
+      <param name="gripper_open_value" value="$(arg open_value)" />
+      <param name="gripper_close_value" value="$(arg close_value)" />
+    </node>
+  </group>
+
+</launch>

@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="extras">
+
+  <xacro:include filename="$(find robotiq_force_torque_sensor)/urdf/robotiq_fts300.urdf.xacro" />
+  <xacro:include filename="$(find robotiq_s_model_control)/urdf/s_model_open.urdf.xacro" />
+  <xacro:include filename="$(find robotiq_c_model_viz)/urdf/c_model_open.urdf.xacro" />
+
+  <!-- RealSense D41X Camera -->
+  <xacro:include filename="$(find husky_description)/urdf/accessories/realsense_d410.urdf.xacro"/>
+
+  <!-- CHANGE BELOW VALUES DURING INTEGRATION -->
+  <!-- MUST CHANGE TO UR5, UR3 or UR10 depending on needs -->
+  <xacro:include filename="$(find ur_description)/urdf/ur5.urdf.xacro" />
+
+  <xacro:arg name="ur3_enabled" default="false"/>
+  <xacro:arg name="ur5_enabled" default="true"/>
+  <xacro:arg name="ur10_enabled" default="false"/>
+  <xacro:property name="ur_origin">
+    <origin xyz="0.28 0 0.0065" rpy="0.0 0.0 -1.5708" />
+  </xacro:property>
+
+  <xacro:arg name="ft_300_enabled" default="true"/>
+  <xacro:arg name="ft_300_parent" default="ur_arm_tool0"/>
+  <xacro:arg name="ft_300_prefix" default="UR_1_"/>
+
+  <xacro:arg name="s_model_enabled" default="true"/>
+  <xacro:arg name="s_model_parent" default="$(arg ft_300_prefix)fts_toolside"/>
+  <xacro:arg name="s_model_prefix" default="UR_1_"/>
+
+  <xacro:arg name="c_model_enabled" default="false"/>
+  <xacro:arg name="c_model_parent" default="$(arg ft_300_prefix)fts_toolside"/>
+  <xacro:arg name="c_model_prefix" default="UR_1_"/>
+
+  <xacro:property name="arch_origin">
+    <origin xyz="-0.32 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </xacro:property>
+
+  <!-- CHANGE ABOVE VALUES DURING INTEGRATION -->
+
+
+
+  <xacro:if value="$(arg ft_300_enabled)">
+    <!-- Spawn FT Sensor -->
+    <xacro:robotiq_fts300 prefix="$(arg ft_300_prefix)" parent="$(arg ft_300_parent)" />
+  </xacro:if>
+
+  <xacro:if value="$(arg s_model_enabled)">
+    <!-- Spawn S model Gripper -->
+    <xacro:s_model_open prefix="$(arg s_model_prefix)" parent="$(arg s_model_parent)"/>
+  </xacro:if>
+
+  <xacro:if value="$(arg c_model_enabled)">
+    <!-- Spawn C model Gripper -->
+    <xacro:c_model_open prefix="$(arg c_model_prefix)" parent="$(arg c_model_parent)"/>
+  </xacro:if>
+
+  <xacro:if value="$(arg ur3_enabled)">
+    <!-- Spawn arm -->
+    <xacro:ur3_robot prefix="ur_arm_" joint_limited="true"/>
+  </xacro:if>
+  <xacro:if value="$(arg ur5_enabled)">
+    <!-- Spawn arm -->
+    <xacro:ur5_robot prefix="ur_arm_" joint_limited="true"/>
+  </xacro:if>
+  <xacro:if value="$(arg ur10_enabled)">
+    <!-- Spawn arm -->
+    <xacro:ur10_robot prefix="ur_arm_" joint_limited="true"/>
+  </xacro:if>
+
+
+  <!-- Join arm -->
+  <joint name="ur_arm_base" type="fixed">
+    <parent link="top_plate_link" />
+    <child link="ur_arm_base_link" />
+    <xacro:insert_block name="ur_origin" />
+  </joint>
+
+
+  <!-- Spawn the sensor arch link -->
+  <link name="sensor_arch_mount_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://husky_description/meshes/integration_arch.dae" />
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://husky_description/meshes/integration_arch.dae" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Attach the sensor arch to the top plate -->
+  <joint name="sensor_arch_mount" type="fixed">
+    <parent link="top_plate_link"/>
+    <child link="sensor_arch_mount_link"/>
+    <xacro:insert_block name="arch_origin" />
+  </joint>
+
+  <!-- RealSense D41X Camera -->
+  <sensor_r410 parent="UR_1_s_model_link" prefix="arm_">
+    <origin xyz="0 0 0.07" rpy="0 0 1.5708"/>
+  </sensor_r410>
+  <!-- Define optical_frame wrt the camera_link -->
+  <link name="/camera_arm/camera_color_optical_frame"/>
+  <joint name="/camera_arm/camera_color_optical_frame_joint" type="fixed">
+    <!-- TODO: Old mount (manually calibrated): -->
+    <!-- <origin xyz="-0.05 0.0 0.08" rpy="-1.5708 0 0"/> -->
+    <!-- TODO: New mount (manually calibrated): -->
+    <!-- <origin xyz="-0.05 0.02 0.09" rpy="-1.561 0 -0.024"/> -->
+    <!-- TODO: New mount (automatically calibrated using visual triangulation): -->
+    <origin xyz="-0.0418 0.0156 0.0721" rpy="-1.5385 -0.0670 -0.0043"/>
+
+    <parent link="UR_1_s_model_link" />
+    <child link="/camera_arm/camera_color_optical_frame" />
+  </joint>
+
+
+  <!-- Palm - Model S Gripper -->
+  <link name="hand_palm_link"/>
+  <joint name="hand_palm_joint" type="fixed">
+    <origin xyz="0.16 0 0" rpy="2.35619 0 0"/>
+    <parent link="ur_arm_ee_link" />
+    <child link="hand_palm_link" />
+  </joint>
+
+  <!-- Hand center - Model S Gripper -->
+  <link name="hand_center_link"/>
+  <joint name="hand_center_joint" type="fixed">
+    <origin xyz="0.055 0 0" rpy="0 0 0"/>
+    <parent link="hand_palm_link" />
+    <child link="hand_center_link" />
+  </joint>
+
+  <!-- Finger tip - Model S Gripper -->
+  <link name="hand_finger_tip_link"/>
+  <joint name="hand_finger_tip_joint" type="fixed">
+    <origin xyz="0.055 0 0" rpy="0 0 0"/>
+    <parent link="hand_center_link" />
+    <child link="hand_finger_tip_link" />
+  </joint>
+
+</robot>

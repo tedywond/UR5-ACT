@@ -1,0 +1,4 @@
+std_msgs/String camera
+
+---
+sensor_msgs/Image frame

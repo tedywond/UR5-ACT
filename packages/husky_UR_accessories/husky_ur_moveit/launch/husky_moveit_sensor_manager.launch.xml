@@ -1,0 +1,6 @@
+<launch>
+  <rosparam command="load" file="$(find husky_ur_moveit)/config/sensors_rgbd_pointcloud.yaml" />
+  <param name="octomap_frame" type="string" value="base_footprint" />
+  <param name="octomap_resolution" type="double" value="0.02" />
+  <param name="max_range" type="double" value="2.0" />
+</launch>

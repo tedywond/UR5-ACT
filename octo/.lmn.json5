@@ -1,0 +1,76 @@
+{
+    "project": {
+        "name": "octo",
+        "mount": [],
+        "exclude": [".git", ".env", ".venv", "Pipfile", "wandb", "*.mp4", "*.egg-info", "__pycache__", ".output", "*.tar.gz", "data-dir", "__pypackages__", ".DS_Store"],  // ".png"
+    },
+    "machines": {
+        "elm": {
+            "docker": {
+                "image": "ripl/octo",
+                "group_id": 4000,  // ripl
+                "network": "host",
+                "mount_from_host": {
+                    "/ripl/data/hackathon/octo": "/project",
+                    "/scratch/hackathon/octo": "/hf_home",
+                    "/dev/shm": "/dev/shm",
+                },
+                "startup": ["groupadd -g 4000 ripl"],
+                "environment": {
+                    "HF_HOME": "/hf_home"
+                },
+            },
+        },
+        "tticslurm": {
+            "mode": "slurm-sing",
+            "mount": [],
+            "singularity": {
+                "startup": "ldconfig /.singularity.d/libs",
+                "sif_file": "/share/data/ripl-takuma/singularity-workspace/my_transformer/my_transformer-cu118.sif",
+                // "sif_file": "/share/data/ripl-takuma/singularity-workspace/my_transformer/my_transformer-latest.sif",
+                "writable_tmpfs": true,
+                "env_from_host": ["CUDA_VISIBLE_DEVICES"],
+                "mount_from_host": {
+                    "/share/data/ripl-takuma/projects/my_transformer": "/project",
+                },
+            },
+            "slurm": {
+                "partition": "contrib-gpu",
+                "cpus_per_task": 1,
+                "time": "04:00:00",
+                "output": "slurm-%j.out.log",
+                "error": "slurm-%j.error.log",
+                // "nodelist": "gpu13",
+                "constraint": "\"a4000|a6000\"",
+                "exclude": "gpu0,gpu18",
+            }
+        },
+        "polaris": {
+            "mode": "pbs-sing",
+            "singularity": {
+                "sif_file": "/grand/projects/SuperBERT/takuma/singularity/my_transformer-cu118.sif",  // Path on the remote host
+                "writable_tmpfs": true,
+                "mount_from_host": {
+                    "/grand/projects/SuperBERT/takuma/project/my_transformer": "/project",
+                },
+                "startup": "ldconfig /.singularity.d/libs"
+            },
+            // PBS configuration
+            "pbs": {
+                "account": "SuperBERT",
+                "queue": "preemptable",  // "debug", "preemptable"
+                "filesystems": "home:grand",
+                "select": 1,
+                "place": "free",
+                "walltime": "72:00:00",
+            },
+            // Startup commands
+            "startup": [
+                "export http_proxy='http://proxy-01.pub.alcf.anl.gov:3128'",
+                "export https_proxy='http://proxy-01.pub.alcf.anl.gov:3128'",
+                "export ftp_proxy='http://proxy-01.pub.alcf.anl.gov:3128'",
+                "module load singularity",
+            ]
+        }
+    }
+}
